@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { LoginUserBody } from "../Types/types";
+import type { LoginUserBody, RegisterUserBody } from "../Types/types";
 
 
 class AuthService {
@@ -11,15 +11,28 @@ class AuthService {
         return localStorage.getItem('token');
     }
 
-    async loginUser(body: LoginUserBody) {
+    async loginUser(payload: LoginUserBody) {
         try {
-            const res = await axios.post(this.authBaseURL + this.authLogin, body);
+            const res = await axios.post(this.authBaseURL + this.authLogin, payload);
 
             console.log(res.data);
 
             return res.data;
         } catch (error) {
             console.log("Login Error : ", error);
+        }
+    }
+
+    async registerUser(payload: RegisterUserBody) {
+        try {
+            const res = await axios.post(this.authBaseURL + this.authRegister, payload);
+
+            console.log(res.data);
+
+            return res.data;
+
+        } catch (error) {
+            console.log("Register Error : ", error);
         }
     }
 }

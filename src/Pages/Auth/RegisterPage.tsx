@@ -1,18 +1,52 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import type { RegisterUserBody } from "../../Types/types";
+import toast from "react-hot-toast";
+import { authService } from "../../Services/AuthService";
+import { ButtonLoader } from "./LoginPage";
 
 export default function RegisterPage() {
+    const [formData, setFormData] = useState<RegisterUserBody>({ name: "", email: "", password: "", gender: "", about: "", profile: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [loader, setLoader] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setProfileImage(file);
             setPreview(URL.createObjectURL(file));
+            setFormData(prev => ({ ...prev, ["profile"]: URL.createObjectURL(file) }));
         }
     };
+
+    const handleChange = (e: any) => {
+        const { name, value } = e.target;
+
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        if (preview != null && formData.name && formData.email && formData.password && formData.gender && formData.about) {
+            console.log(formData);
+            setLoader(true);
+            const data = await authService.registerUser(formData);
+
+            if (!data.error) {
+                toast.success(data.message);
+                navigate('/login', { replace: true });
+            } else {
+                toast.error(data.message);
+            }
+            setLoader(false);
+
+        } else {
+            toast.error("Please fill all details...")
+        }
+    }
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 p-6">
@@ -24,7 +58,7 @@ export default function RegisterPage() {
                     <p className="text-gray-500">Join writers and creators around the world ✍️</p>
                 </div>
 
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                     {/* Profile Image Upload */}
                     <div className="flex flex-col items-center space-y-3">
                         <div className="relative">
@@ -59,6 +93,9 @@ export default function RegisterPage() {
                         <label className="block text-gray-700 font-medium mb-2">Full Name</label>
                         <input
                             type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={(event) => handleChange(event)}
                             placeholder="John Doe"
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                         />
@@ -69,6 +106,9 @@ export default function RegisterPage() {
                         <label className="block text-gray-700 font-medium mb-2">Email</label>
                         <input
                             type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={(event) => handleChange(event)}
                             placeholder="you@example.com"
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                         />
@@ -80,6 +120,9 @@ export default function RegisterPage() {
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={formData.password}
+                                onChange={(event) => handleChange(event)}
                                 placeholder="••••••••"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                             />
@@ -102,7 +145,8 @@ export default function RegisterPage() {
                                     <input
                                         type="radio"
                                         name="gender"
-                                        value={g.toLowerCase()}
+                                        onChange={(event) => handleChange(event)}
+                                        value={g}
                                         className="accent-gray-900"
                                     />
                                     {g}
@@ -116,6 +160,9 @@ export default function RegisterPage() {
                         <label className="block text-gray-700 font-medium mb-2">About You</label>
                         <textarea
                             rows={3}
+                            name="about"
+                            value={formData.about}
+                            onChange={(event) => handleChange(event)}
                             placeholder="Tell us something about yourself..."
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition resize-none"
                         ></textarea>
@@ -124,10 +171,13 @@ export default function RegisterPage() {
                     {/* Submit */}
                     <button
                         type="submit"
-                        className="w-full bg-gray-900 text-white py-3 rounded-xl hover:bg-gray-800 transition-transform transform hover:scale-[1.02] font-semibold shadow-lg"
+                        disabled={loader}
+                        className="w-full bg-gray-900 text-white py-3 rounded-xl hover:bg-gray-800 transition-transform transform hover:scale-[1.02] font-semibold shadow-lg disabled:bg-gray-500 disabled:cursor-not-allowed"
                     >
-                        Sign Up
+                        {/* --- Using the Custom Loader --- */}
+                        {loader ? <ButtonLoader message="Sign up..." /> : "Sign Up"}
                     </button>
+
 
                     <p className="text-center text-gray-600 text-sm mt-4">
                         Already have an account?{" "}

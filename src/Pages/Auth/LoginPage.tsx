@@ -4,13 +4,12 @@ import type { LoginUserBody } from "../../Types/types";
 import toast from "react-hot-toast";
 import { authService } from "../../Services/AuthService";
 
-const ButtonLoader = () => (
+export const ButtonLoader = ({ message }: { message: string }) => (
     <div className="flex justify-center items-center">
         <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-        <span className="ml-2">Signing in...</span>
+        <span className="ml-2">{message}</span>
     </div>
 );
-
 const ErrorAlert = ({ message }: { message: string }) => (
     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
         <strong className="font-bold">Oops! </strong>
@@ -51,6 +50,7 @@ export default function LoginPage() {
                 setLoginFailed(data.message);
             }
         } else {
+            setLoginFailed("Please fill all details...");
             toast.error("Please fill all details...")
         }
     }
@@ -117,7 +117,7 @@ export default function LoginPage() {
                         className="w-full bg-gray-900 text-white py-3 rounded-xl hover:bg-gray-800 transition-transform transform hover:scale-[1.02] font-semibold shadow-lg disabled:bg-gray-500 disabled:cursor-not-allowed"
                     >
                         {/* --- Using the Custom Loader --- */}
-                        {loader ? <ButtonLoader /> : "Sign In"}
+                        {loader ? <ButtonLoader message="Signing in..." /> : "Sign In"}
                     </button>
 
                     <p className="text-center text-gray-600 text-sm mt-4">

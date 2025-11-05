@@ -2,3 +2,12 @@ export interface LoginUserBody {
     email: string,
     password: string
 }
+
+export interface RegisterUserBody {
+    name: string,
+    email: string,
+    password: string,
+    gender: string,
+    about: string,
+    profile: string
+}
