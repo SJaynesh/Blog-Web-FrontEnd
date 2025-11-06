@@ -6,7 +6,7 @@ import { authService } from "../../Services/AuthService";
 import { ButtonLoader } from "./LoginPage";
 
 export default function RegisterPage() {
-    const [formData, setFormData] = useState<RegisterUserBody>({ name: "", email: "", password: "", gender: "", about: "", profile: "" });
+    const [formData, setFormData] = useState<RegisterUserBody>({ name: "", email: "", password: "", gender: "", about: "", profile_image: null });
     const [showPassword, setShowPassword] = useState(false);
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export default function RegisterPage() {
         if (file) {
             setProfileImage(file);
             setPreview(URL.createObjectURL(file));
-            setFormData(prev => ({ ...prev, ["profile"]: URL.createObjectURL(file) }));
+            setFormData(prev => ({ ...prev, ["profile"]: profileImage }));
         }
     };
 
@@ -30,7 +30,7 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        if (preview != null && formData.name && formData.email && formData.password && formData.gender && formData.about) {
+        if (preview != null && profileImage != null && formData.name && formData.email && formData.password && formData.gender && formData.about) {
             console.log(formData);
             setLoader(true);
             const data = await authService.registerUser(formData);

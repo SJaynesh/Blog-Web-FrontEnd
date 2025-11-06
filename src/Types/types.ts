@@ -9,5 +9,5 @@ export interface RegisterUserBody {
     password: string,
     gender: string,
     about: string,
-    profile: string
+    profile_image: File | null
 }
