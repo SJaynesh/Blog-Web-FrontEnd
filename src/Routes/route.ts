@@ -3,6 +3,16 @@ import App from "../App";
 import LoginPage from "../Pages/Auth/LoginPage";
 import RegisterPage from "../Pages/Auth/RegisterPage";
 import HomePage from "../Pages/Home/HomePage";
+import ForgotPasswordPage from "../Pages/Auth/ForgotPage";
+import OTPVerifyPage from "../Pages/Auth/OTPVerifyPage";
+
+export const routePath = {
+    login: '/login',
+    register: '/register',
+    forgotPassword: '/forgot_password',
+    otpVerify: '/otp_verify',
+    home: '/home',
+}
 
 export const route = createBrowserRouter([
     {
@@ -10,15 +20,23 @@ export const route = createBrowserRouter([
         Component: App,
         children: [
             {
-                path: '/login',
+                path: routePath.login,
                 Component: LoginPage,
             },
             {
-                path: '/register',
+                path: routePath.register,
                 Component: RegisterPage
             },
             {
-                path: '/home',
+                path: routePath.forgotPassword,
+                Component: ForgotPasswordPage
+            },
+            {
+                path: routePath.otpVerify,
+                Component: OTPVerifyPage
+            },
+            {
+                path: routePath.home,
                 Component: HomePage
             }
         ]

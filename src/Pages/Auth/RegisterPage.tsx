@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router";
 import type { RegisterUserBody } from "../../Types/types";
 import toast from "react-hot-toast";
 import { authService } from "../../Services/AuthService";
-import { ButtonLoader } from "./LoginPage";
+import { routePath } from "../../Routes/route";
+import { ButtonLoader } from "../../Components/ButtonLoader";
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState<RegisterUserBody>({ name: "", email: "", password: "", gender: "", about: "", profile_image: null });
@@ -14,11 +15,12 @@ export default function RegisterPage() {
     const navigate = useNavigate();
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
         const file = e.target.files?.[0];
         if (file) {
             setProfileImage(file);
             setPreview(URL.createObjectURL(file));
-            setFormData(prev => ({ ...prev, ["profile"]: profileImage }));
+            setFormData(prev => ({ ...prev, ['profile_image']: file }));
         }
     };
 
@@ -32,12 +34,13 @@ export default function RegisterPage() {
         e.preventDefault();
         if (preview != null && profileImage != null && formData.name && formData.email && formData.password && formData.gender && formData.about) {
             console.log(formData);
+
             setLoader(true);
             const data = await authService.registerUser(formData);
 
             if (!data.error) {
                 toast.success(data.message);
-                navigate('/login', { replace: true });
+                navigate(routePath.login, { replace: true });
             } else {
                 toast.error(data.message);
             }
@@ -182,7 +185,7 @@ export default function RegisterPage() {
                     <p className="text-center text-gray-600 text-sm mt-4">
                         Already have an account?{" "}
                         <Link
-                            to="/login"
+                            to={routePath.login}
                             className="text-gray-900 font-medium hover:underline"
                         >
                             Sign In

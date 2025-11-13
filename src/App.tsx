@@ -2,14 +2,15 @@ import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Outlet, useNavigate } from "react-router";
 import { authService } from "./Services/AuthService";
+import { routePath } from "./Routes/route";
 
 export default function App() {
     const navigate = useNavigate();
     useEffect(() => {
         if (authService.getAuthToken()) {
-            navigate('/home', { replace: true });
+            navigate(routePath.home, { replace: true });
         } else {
-            navigate('/login', { replace: true });
+            navigate(routePath.login, { replace: true });
         }
     }, [])
     return (

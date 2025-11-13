@@ -3,19 +3,12 @@ import { Link, useNavigate } from "react-router";
 import type { LoginUserBody } from "../../Types/types";
 import toast from "react-hot-toast";
 import { authService } from "../../Services/AuthService";
+import { routePath } from "../../Routes/route";
+import { ButtonLoader } from "../../Components/ButtonLoader";
+import { ErrorAlert } from "../../Components/ErrorAlert";
 
-export const ButtonLoader = ({ message }: { message: string }) => (
-    <div className="flex justify-center items-center">
-        <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-        <span className="ml-2">{message}</span>
-    </div>
-);
-const ErrorAlert = ({ message }: { message: string }) => (
-    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-        <strong className="font-bold">Oops! </strong>
-        <span className="block sm:inline">{message}</span>
-    </div>
-);
+
+
 
 
 export default function LoginPage() {
@@ -45,7 +38,7 @@ export default function LoginPage() {
             if (!data.error) {
                 toast.success(data.message);
                 localStorage.setItem('token', data.result.token);
-                navigate('/home', { replace: true });
+                navigate(routePath.home, { replace: true });
             } else {
                 setLoginFailed(data.message);
             }
@@ -105,9 +98,9 @@ export default function LoginPage() {
 
                     {/* Forgot Password */}
                     <div className="flex justify-end text-sm text-gray-600">
-                        <a href="#" className="hover:text-gray-900 font-medium transition">
+                        <Link to={routePath.forgotPassword} className="hover:text-gray-900 font-medium transition">
                             Forgot password?
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Submit */}
@@ -122,7 +115,7 @@ export default function LoginPage() {
 
                     <p className="text-center text-gray-600 text-sm mt-4">
                         Don’t have an account?{" "}
-                        <Link to="/register" className="text-gray-900 font-medium hover:underline">
+                        <Link to={routePath.register} className="text-gray-900 font-medium hover:underline">
                             Create one
                         </Link>
                     </p>
