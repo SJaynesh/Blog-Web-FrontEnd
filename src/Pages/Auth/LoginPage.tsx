@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { LoginUserBody } from "../../Types/types";
 import toast from "react-hot-toast";
@@ -16,7 +16,16 @@ export default function LoginPage() {
     const [loginData, setLoginData] = useState<LoginUserBody>({ email: "", password: "" });
     const [loginFailed, setLoginFailed] = useState<string>("");
     const [loader, setLoader] = useState<boolean>(false);
+    const [screenLoader, setScreenLoader] = useState<boolean>(true);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const t = setInterval(() => {
+            setScreenLoader(false);
+        }, 1000)
+
+        return () => clearInterval(t);
+    }, []);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -46,6 +55,15 @@ export default function LoginPage() {
             setLoginFailed("Please fill all details...");
             toast.error("Please fill all details...")
         }
+    }
+
+    if (screenLoader) {
+        return <>
+            <div className="flex justify-center items-center">
+                <div className="w-5 h-5 border-2 border-t-transparent border-black rounded-full animate-spin"></div>
+                <span className="ml-2">Loading....</span>
+            </div>
+        </>
     }
 
     return (

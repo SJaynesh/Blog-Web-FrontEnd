@@ -5,12 +5,14 @@ import RegisterPage from "../Pages/Auth/RegisterPage";
 import HomePage from "../Pages/Home/HomePage";
 import ForgotPasswordPage from "../Pages/Auth/ForgotPage";
 import OTPVerifyPage from "../Pages/Auth/OTPVerifyPage";
+import ChangePasswordPage from "../Pages/Auth/ChangePasswordPage";
 
 export const routePath = {
     login: '/login',
     register: '/register',
     forgotPassword: '/forgot_password',
     otpVerify: '/otp_verify',
+    changePassword: '/change_password',
     home: '/home',
 }
 
@@ -34,6 +36,11 @@ export const route = createBrowserRouter([
             {
                 path: routePath.otpVerify,
                 Component: OTPVerifyPage
+            },
+
+            {
+                path: routePath.changePassword,
+                Component: ChangePasswordPage
             },
             {
                 path: routePath.home,

@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { LoginUserBody, RegisterUserBody } from "../Types/types";
+import type { ChangePasswordPayload, LoginUserBody, OTPVerifyPayLoad, RegisterUserBody } from "../Types/types";
 import toast from "react-hot-toast";
 
 
@@ -9,6 +9,8 @@ class AuthService {
     authLogin = "/auth/login";
     authRegister = "/auth/register";
     authForgotPasswor = "/auth/forgot_password"
+    authOTPVerify = "/auth/verify_otp"
+    authChangePassword = "/auth/change_password"
 
     getAuthToken() {
         return localStorage.getItem('token');
@@ -17,8 +19,6 @@ class AuthService {
     async loginUser(payload: LoginUserBody) {
         try {
             const res = await axios.post(this.authBaseURL + this.authLogin, payload);
-
-            console.log(res.data);
 
             return res.data;
         } catch (error) {
@@ -40,11 +40,7 @@ class AuthService {
                 formData.append('profile_image', payload.profile_image);
             }
 
-            console.log("API FormData :", formData);
-
             const res = await axios.post(this.authBaseURL + this.authRegister, formData);
-
-            console.log(res.data);
 
             return res.data;
 
@@ -57,11 +53,32 @@ class AuthService {
     async forgotPassword(payload: any) {
         try {
             const res = await axios.post(this.authBaseURL + this.authForgotPasswor, payload);
-            console.log(res.data);
 
             return res.data;
         } catch (error) {
             console.log("Forgot Password Error : ", error);
+            toast.error("Something went wrong. Please try again..");
+        }
+    }
+
+    async OTPVerify(payload: OTPVerifyPayLoad) {
+        try {
+            const res = await axios.post(this.authBaseURL + this.authOTPVerify, payload);
+
+            return res.data;
+        } catch (error) {
+            console.log("OTP Verify Error : ", error);
+            toast.error("Something went wrong. Please try again..");
+        }
+    }
+
+    async changePassword(payload: ChangePasswordPayload) {
+        try {
+            const res = await axios.post(this.authBaseURL + this.authChangePassword, payload);
+
+            return res.data;
+        } catch (error) {
+            console.log("Change Password Error : ", error);
             toast.error("Something went wrong. Please try again..");
         }
     }

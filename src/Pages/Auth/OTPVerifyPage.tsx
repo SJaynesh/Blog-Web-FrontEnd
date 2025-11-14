@@ -1,30 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import toast from "react-hot-toast";
-import { authService } from "../../Services/AuthService";
 import { ButtonLoader } from "../../Components/ButtonLoader";
 import { routePath } from "../../Routes/route";
+import { ErrorAlert } from "../../Components/ErrorAlert";
+import { authService } from "../../Services/AuthService";
+import type { OTPVerifyPayLoad } from "../../Types/types";
+import toast from "react-hot-toast";
 
-const ErrorAlert = ({ message }: { message: string }) => (
-    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-        <strong className="font-bold">Oops! </strong>
-        <span className="block sm:inline">{message}</span>
-    </div>
-);
 
-const SuccessAlert = ({ message }: { message: string }) => (
-    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
-        <strong className="font-bold">Success! </strong>
-        <span className="block sm:inline">{message}</span>
-    </div>
-);
 
 export default function OTPVerifyPage() {
     const [loader, setLoader] = useState<boolean>(false);
+    const [resetLoader, setResetLoader] = useState<boolean>(false);
     const [email, setEmail] = useState<string>("");
     const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
     const [error, setError] = useState<string>("");
-    const [timer, setTimer] = useState<number>(20);
+    const [timer, setTimer] = useState<number>(120);
 
     const location = useLocation();
 
@@ -32,8 +23,6 @@ export default function OTPVerifyPage() {
 
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const navigate = useNavigate();
-
-    console.log("OTP Page", email);
 
     useEffect(() => {
         if (!state) {
@@ -63,8 +52,6 @@ export default function OTPVerifyPage() {
 
         return `0${minute}:${second < 10 ? "0" : ""}${second}`;
     }
-
-
 
 
     const handleOtpChange = (index: number, value: string) => {
@@ -127,11 +114,54 @@ export default function OTPVerifyPage() {
             return;
         }
 
+        console.log("OTP : ", otpString);
+
+        const payload: OTPVerifyPayLoad = {
+            email,
+            OTP: otpString,
+        }
+
+        try {
+            setLoader(true);
+            const data = await authService.OTPVerify(payload);
+
+            if (!data.error) {
+                navigate(routePath.changePassword, { replace: true, state: { email } });
+                toast.success(data.message);
+                setError("");
+            } else {
+                setError(data.message)
+            }
+        } catch (error) {
+            console.log("OTP Verify Error : ", error);
+            toast.error("Something went wrong. Please try again..");
+        }
+
+        setLoader(false);
 
     };
 
-    const handleResendOtp = async () => {
+    const handleResendOtp = async (event: any) => {
+        event.preventDefault();
 
+        try {
+            setResetLoader(true);
+            const data = await authService.forgotPassword({ email });
+
+            if (!data.error) {
+                toast.success(data.message);
+                setOtp(Array(6).fill(""));
+                setTimer(120);
+                setError("");
+            } else {
+                setError(data.message);
+            }
+        } catch (error) {
+            console.log("Resend OTP: ", error);
+            toast.error("Something went wrong. Please try again..");
+        }
+
+        setResetLoader(false);
     };
 
     return (
@@ -185,7 +215,10 @@ export default function OTPVerifyPage() {
                     <div className="text-center">
                         <p className="text-gray-600 mb-2">
                             {timer === 0 ? <>
-                                <button>Resend OTP</button>
+                                <button onClick={handleResendOtp}>{resetLoader ? <div className="flex justify-center items-center">
+                                    <div className="w-5 h-5 border-2 border-t-transparent border-black rounded-full animate-spin"></div>
+                                    <span className="ml-2">"Sending..."</span>
+                                </div> : "Resent OTP"}</button>
                             </> : formateTimer(timer)}
                         </p>
                     </div>
