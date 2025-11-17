@@ -25,10 +25,16 @@ export default function OTPVerifyPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!state) {
-            navigate(routePath.login, { replace: true });
+
+        if (authService.getAuthToken()) {
+            navigate(routePath.home, { replace: true });
+            return;
         }
 
+        if (!state) {
+            navigate(routePath.login, { replace: true });
+            return;
+        }
         setEmail(state.email);
     }, []);
 

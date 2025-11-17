@@ -13,7 +13,7 @@ class AuthService {
     authChangePassword = "/auth/change_password"
 
     getAuthToken() {
-        return localStorage.getItem('token');
+        return localStorage.getItem('authToken');
     }
 
     async loginUser(payload: LoginUserBody) {

@@ -6,10 +6,8 @@ import { authService } from "../../Services/AuthService";
 import { routePath } from "../../Routes/route";
 import { ButtonLoader } from "../../Components/ButtonLoader";
 import { ErrorAlert } from "../../Components/ErrorAlert";
-
-
-
-
+import { app } from "../../Firebase/firebase";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +17,14 @@ export default function LoginPage() {
     const [screenLoader, setScreenLoader] = useState<boolean>(true);
     const navigate = useNavigate();
 
+    const auth = getAuth(app);
+    const googleAuthProvider = new GoogleAuthProvider();
+
     useEffect(() => {
+        if (authService.getAuthToken()) {
+            navigate(routePath.home, { replace: true });
+            return;
+        }
         const t = setInterval(() => {
             setScreenLoader(false);
         }, 1000)
@@ -35,7 +40,7 @@ export default function LoginPage() {
         }
     }
 
-    const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (loginData.email && loginData.password) {
@@ -46,7 +51,7 @@ export default function LoginPage() {
 
             if (!data.error) {
                 toast.success(data.message);
-                localStorage.setItem('token', data.result.token);
+                localStorage.setItem('authToken', data.result.token);
                 navigate(routePath.home, { replace: true });
             } else {
                 setLoginFailed(data.message);
@@ -55,6 +60,25 @@ export default function LoginPage() {
             setLoginFailed("Please fill all details...");
             toast.error("Please fill all details...")
         }
+    }
+
+    const handleLoginWithGoogle = (event: any) => {
+        console.log("BTN Click...");
+        event.preventDefault();
+
+        signInWithPopup(auth, googleAuthProvider).then(result => {
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential!.accessToken;
+
+            console.log("User Data : ", result.user);
+            console.log("Token : ", token);
+
+            localStorage.setItem('authToken', token!);
+            navigate(routePath.home, { replace: true });
+        }).catch(error => {
+            console.log("Error Code : ", error.code);
+            toast.error(error.message);
+        });
     }
 
     if (screenLoader) {
@@ -74,7 +98,7 @@ export default function LoginPage() {
                     <p className="text-gray-500">Sign in to continue exploring stories & blogs</p>
                 </div>
 
-                <form className="space-y-6 mt-8" onSubmit={onSubmit}>
+                <form className="space-y-6 mt-8" onSubmit={handleSubmit}>
 
                     {/* --- Custom Alert for Login Failure --- */}
                     {loginFailed && <ErrorAlert message={loginFailed} />}
@@ -130,6 +154,33 @@ export default function LoginPage() {
                         {/* --- Using the Custom Loader --- */}
                         {loader ? <ButtonLoader message="Signing in..." /> : "Sign In"}
                     </button>
+
+                    {/* --- Google Login Button --- */}
+                    <button
+                        type="button"
+                        onClick={handleLoginWithGoogle}
+                        className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-xl hover:bg-gray-100 transition-transform transform hover:scale-[1.02] font-semibold shadow-sm bg-white"
+                    >
+                        <img
+                            src="https://www.svgrepo.com/show/475656/google-color.svg"
+                            alt="Google"
+                            className="w-5 h-5"
+                        />
+                        Sign in with Google
+                    </button>
+
+                    {/* --- GitHub Login Button --- */}
+                    {/* <button
+                        type="button"
+                        className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-[#24292e] text-white hover:bg-[#1f2428] transition-transform transform hover:scale-[1.02] font-semibold shadow-md"
+                    >
+                        <img
+                            src="https://www.svgrepo.com/show/512317/github-142.svg"
+                            alt="GitHub"
+                            className="w-5 h-5 invert"
+                        />
+                        Sign in with GitHub
+                    </button> */}
 
                     <p className="text-center text-gray-600 text-sm mt-4">
                         Don’t have an account?{" "}

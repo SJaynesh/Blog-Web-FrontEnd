@@ -25,6 +25,11 @@ export default function ChangePasswordPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (authService.getAuthToken()) {
+            navigate(routePath.home, { replace: true });
+            return;
+        }
+
         if (!location.state.email) {
             return;
         }

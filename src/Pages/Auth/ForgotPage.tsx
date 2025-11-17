@@ -1,14 +1,10 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { authService } from "../../Services/AuthService";
 import { ButtonLoader } from "../../Components/ButtonLoader";
 import { ErrorAlert } from "../../Components/ErrorAlert";
 import { routePath } from "../../Routes/route";
-
-
-
-
 
 export default function ForgotPasswordPage() {
     const [loader, setLoader] = useState<boolean>(false);
@@ -16,6 +12,13 @@ export default function ForgotPasswordPage() {
     const [loginFailed, setloginFailed] = useState<string>("");
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (authService.getAuthToken()) {
+            navigate(routePath.home, { replace: true });
+            return;
+        }
+    }, []);
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();

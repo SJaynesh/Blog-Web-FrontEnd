@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import type { RegisterUserBody } from "../../Types/types";
 import toast from "react-hot-toast";
@@ -13,6 +13,15 @@ export default function RegisterPage() {
     const [preview, setPreview] = useState<string | null>(null);
     const [loader, setLoader] = useState<boolean>(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (authService.getAuthToken()) {
+            console.log("Hey.... !!!");
+
+            navigate(routePath.home, { replace: true });
+            return;
+        }
+    }, []);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
