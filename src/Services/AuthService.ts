@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 
 class AuthService {
-    authBaseURL = "https://blog-web-app-sandy.vercel.app/api";
+    authBaseURL = "https://blog-web-backend-1-dkyg.onrender.com/api";
     authLogin = "/auth/login";
     authRegister = "/auth/register";
     authForgotPasswor = "/auth/forgot_password"

@@ -6,14 +6,16 @@ import HomePage from "../Pages/Home/HomePage";
 import ForgotPasswordPage from "../Pages/Auth/ForgotPage";
 import OTPVerifyPage from "../Pages/Auth/OTPVerifyPage";
 import ChangePasswordPage from "../Pages/Auth/ChangePasswordPage";
+import AddBlogPage from "../Pages/Blog/AddBlogPage";
 
 export const routePath = {
     login: '/login',
     register: '/register',
     forgotPassword: '/forgot_password',
-    otpVerify: '/otp_verify',
+    otpVerify: '/otp-verify',
     changePassword: '/change_password',
     home: '/home',
+    addBlog: '/add-blog',
 }
 
 export const route = createBrowserRouter([
@@ -45,6 +47,10 @@ export const route = createBrowserRouter([
             {
                 path: routePath.home,
                 Component: HomePage
+            },
+            {
+                path: routePath.addBlog,
+                Component: AddBlogPage
             }
         ]
     }

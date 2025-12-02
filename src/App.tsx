@@ -14,12 +14,12 @@ export default function App() {
         }
     }, [])
     return (
-        <div className="h-screen w-full flex flex-col">
-            <main className="flex-grow flex justify-center items-center">
+        <div className="w-screen h-screen flex flex-col">
+            <main className="flex-1 w-full h-full">
                 <Outlet />
-                <Toaster position="top-right"
-                    reverseOrder={false} />
+                <Toaster position="top-right" reverseOrder={false} />
             </main>
         </div>
+
     );
 }
