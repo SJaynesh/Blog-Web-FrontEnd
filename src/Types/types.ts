@@ -53,7 +53,7 @@ export interface Author {
 
 export interface Comment {
     _id: string;
-    userId: string;
+    userId: Author;
     msg: string;
     create_at: string;
 }

@@ -7,6 +7,7 @@ import ForgotPasswordPage from "../Pages/Auth/ForgotPage";
 import OTPVerifyPage from "../Pages/Auth/OTPVerifyPage";
 import ChangePasswordPage from "../Pages/Auth/ChangePasswordPage";
 import AddBlogPage from "../Pages/Blog/AddBlogPage";
+import BlogDetailPage from "../Pages/Blog/BlogDetailPage";
 
 export const routePath = {
     login: '/login',
@@ -16,6 +17,7 @@ export const routePath = {
     changePassword: '/change_password',
     home: '/home',
     addBlog: '/add-blog',
+    blogDetail: '/blog/:blogId'
 }
 
 export const route = createBrowserRouter([
@@ -51,6 +53,10 @@ export const route = createBrowserRouter([
             {
                 path: routePath.addBlog,
                 Component: AddBlogPage
+            },
+            {
+                path: routePath.blogDetail,
+                Component: BlogDetailPage,
             }
         ]
     }

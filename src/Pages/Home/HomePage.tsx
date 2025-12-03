@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router';
 import { blogService } from '../../Services/BlogService';
 import toast from 'react-hot-toast';
 import CustomLoader from '../../Components/CustomLoader';
-import type { Blog, User } from '../../Types/types';
 import Header from '../../Components/Header';
 import {
     CalendarDays,
@@ -25,17 +24,22 @@ import {
     TrendingUp as TrendingUpIcon,
     Clock as ClockIcon
 } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../../redux/store';
+import { setAllBlogs, setCurrentUser } from '../../redux/features/blogSlice';
 
 type ViewMode = 'grid' | 'list';
 
 export default function HomePage() {
     const [isLoader, setIsLoader] = useState<boolean>(false);
-    const [allBlogs, setAllBlogs] = useState<Blog[]>([]);
-    const [userProfile, setUserProfile] = useState<User>();
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [sortBy, setSortBy] = useState<'latest' | 'popular'>('latest');
+
+    const allBlogs = useSelector((state: RootState) => state.blog.allBlogs);
+    const user = useSelector((state: RootState) => state.blog.user);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         getAllBlogs();
@@ -44,10 +48,15 @@ export default function HomePage() {
 
     const getAllBlogs = async () => {
         try {
+            if (allBlogs.length > 0) {
+                return;
+            }
+
             setIsLoader(true);
             const data = await blogService.fetchAllBlogs();
             if (!data.error) {
-                setAllBlogs(data.result);
+                // setAllBlogs(data.result);
+                dispatch(setAllBlogs(data.result));
                 toast.success(data.message);
             } else {
                 toast.error(data.message);
@@ -61,9 +70,13 @@ export default function HomePage() {
 
     const getUserProfile = async () => {
         try {
+            if (user) {
+                return;
+            }
             const data = await blogService.fetchUserProfile();
             if (!data.error) {
-                setUserProfile(data.result);
+                // setUserProfile(data.result);
+                dispatch(setCurrentUser(data.result));
             }
         } catch (err) {
             console.error("Fetch User Profile : ", err);
@@ -100,17 +113,17 @@ export default function HomePage() {
 
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* User Profile Sidebar */}
-                    {userProfile && (
+                    {user && (
                         <div className="lg:w-1/3">
                             <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-100 p-6 sticky top-24">
                                 <div className="text-center mb-6">
                                     <div className="relative w-32 h-32 mx-auto mb-4">
                                         <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-1">
                                             <div className="w-full h-full bg-white rounded-full p-1">
-                                                {userProfile.profile_image ? (
+                                                {user.profile_image ? (
                                                     <img
-                                                        src={userProfile.profile_image}
-                                                        alt={userProfile.name}
+                                                        src={user.profile_image}
+                                                        alt={user.name}
                                                         className="w-full h-full rounded-full object-cover"
                                                     />
                                                 ) : (
@@ -122,7 +135,7 @@ export default function HomePage() {
                                         </div>
                                     </div>
 
-                                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{userProfile.name}</h2>
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{user.name}</h2>
                                     <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-medium mb-4">
                                         <TrendingUp className="w-4 h-4 mr-1" />
                                         Member
@@ -131,25 +144,25 @@ export default function HomePage() {
                                     <div className="space-y-4 text-left">
                                         <div className="flex items-center text-gray-600">
                                             <Mail className="w-5 h-5 mr-3 text-gray-400" />
-                                            <span className="truncate">{userProfile.email}</span>
+                                            <span className="truncate">{user.email}</span>
                                         </div>
-                                        {userProfile.gender && (
+                                        {user.gender && (
                                             <div className="flex items-center text-gray-600">
                                                 <UserIcon className="w-5 h-5 mr-3 text-gray-400" />
-                                                <span className="capitalize">{userProfile.gender}</span>
+                                                <span className="capitalize">{user.gender}</span>
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
-                                {userProfile.about && (
+                                {user.about && (
                                     <div className="mt-6 pt-6 border-t border-gray-200">
                                         <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
                                             <PenTool className="w-4 h-4 mr-2" />
                                             About Me
                                         </h3>
                                         <p className="text-gray-600 text-sm leading-relaxed">
-                                            {userProfile.about}
+                                            {user.about}
                                         </p>
                                     </div>
                                 )}
